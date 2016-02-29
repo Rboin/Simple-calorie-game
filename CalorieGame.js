@@ -7,12 +7,24 @@
     // Get needed elements from DOM
     var gameArea = document.getElementById("calorie-game");
     var dropArea = document.getElementById("calorie-calculator");
-    var scoreLabel = document.getElementById("total-score");
+    // Score labels
+    var calorieLabel = document.getElementById("total-calories");
+    var fatLabel = document.getElementById("total-fat");
+    var eggwhiteLabel = document.getElementById("total-eggwhite");
+    var carbonLabel = document.getElementById("total-carbonhydrates");
+    var fibersLabel = document.getElementById("total-fibers");
+    var saltLabel = document.getElementById("total-salt");
+    // Male and female checkboxes
+    var maleCheckbox = document.getElementById("checkMale");
+    var femaleCheckbox = document.getElementById("checkFemale");
+
+    // Draggable images
     var draggableItems = gameArea.getElementsByTagName("img");
 
-    // Initialize the ScoreBoard object
-    var scoreBoard = new ScoreBoard();
-    var items = [];
+    var lsItem = localStorage.getItem("calorie-game");
+
+    var scoreBoard;
+    var items;
 
     /**
      * This function will run automatically when the enclosing function runs.
@@ -24,6 +36,26 @@
      *
      */
     (function init() {
+        // Check if the game has been played before by checking the local storage
+        // if so, get those elements
+        if(lsItem) {
+            scoreBoard = new ScoreBoard(JSON.parse(lsItem));
+            items = scoreBoard.items.slice(0);
+            for(var i in items) {
+                dropArea.appendChild(items[i].getElement());
+                items[i].getElement().oncontextmenu = function(ev) { mouseDown(ev); };
+            }
+            if(scoreBoard.gender == "male") {
+                maleCheckbox.checked = true;
+            } else if(scoreBoard.gender == "female") {
+                femaleCheckbox.checked = true;
+            }
+            updateTotalScores();
+        } else {
+            scoreBoard = new ScoreBoard();
+            items = [];
+        }
+
         dropArea.ondrop = function(ev) { drop(ev); };
         dropArea.ondragover = function(ev) { allowDrop(ev); };
 
@@ -37,10 +69,29 @@
             draggableItems[i].addEventListener("dragstart", function(ev) { drag(ev); })
         }
 
+        //Checkbox events
+        maleCheckbox.onchange = function() {
+            if(maleCheckbox.checked) {
+                scoreBoard.gender = "male"
+            }
+            updateTotalScores();
+        };
+        femaleCheckbox.onchange = function() {
+            if(femaleCheckbox.checked) {
+                scoreBoard.gender = "female"
+            }
+            updateTotalScores();
+        };
+
     })();
 
 
     // Event Handlers
+
+    window.onbeforeunload = function() {
+        localStorage.setItem("calorie-game", scoreBoard.toJSON());
+    };
+
     function allowDrop(event) {
         event.preventDefault();
     }
@@ -57,10 +108,18 @@
         dropArea.appendChild(clone);
         // Add removal function to the added element
         clone.oncontextmenu = function(ev) { mouseDown(ev); };
-        var newFoodItem = new FoodItem(clone.alt, clone.getAttribute("calories"), clone);
+        var stats = {
+            calories: clone.getAttribute("calories"),
+            fat: clone.getAttribute("fat"),
+            eggwhite: clone.getAttribute("eggwhite"),
+            carbonhydrates: clone.getAttribute("carbonhydrates"),
+            fibers: clone.getAttribute("fibers"),
+            salt: clone.getAttribute("salt")
+        };
+        var newFoodItem = new FoodItem(clone.alt, stats, clone);
         items.push(newFoodItem);
         scoreBoard.addItem(newFoodItem);
-        updateTotalScore();
+        updateTotalScores();
     }
 
     function mouseDown(event) {
@@ -73,16 +132,30 @@
         }
     }
 
-    function updateTotalScore() {
-        var text = scoreLabel.innerHTML.split(":");
-        scoreLabel.innerHTML = text[0] + ": " + scoreBoard.getTotalScore();
+    function updateTotalScores() {
+        var calText = calorieLabel.innerHTML.split(":"),
+            fatText = fatLabel.innerHTML.split(":"),
+            eggText = eggwhiteLabel.innerHTML.split(":"),
+            carbonText = carbonLabel.innerHTML.split(":"),
+            fibersText = fibersLabel.innerHTML.split(":"),
+            saltText = saltLabel.innerHTML.split(":");
+
+        // Update the labels
+        var max = (scoreBoard.gender == "male") ? 2500 : 2000;
+        var percentCal = parseFloat(Math.round(((scoreBoard.getTotalScore().calories / max)*100)*100)/100).toFixed(2);
+        calorieLabel.innerHTML = calText[0] + ": " + scoreBoard.getTotalScore().calories + "/" + max + " (" + percentCal + "%)";
+        fatLabel.innerHTML = fatText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().fat*100)/100).toFixed(2);
+        eggwhiteLabel.innerHTML = eggText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().eggwhite*100)/100).toFixed(2);
+        carbonLabel.innerHTML = carbonText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().carbonhydrates*100)/100).toFixed(2);
+        fibersLabel.innerHTML = fibersText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().fibers*100)/100).toFixed(2);
+        saltLabel.innerHTML = saltText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().salt*100)/100).toFixed(2);
     }
 
     function removeItem(index) {
         dropArea.removeChild(items[index].getElement());
         scoreBoard.removeItem(items[index]);
         items.splice(index, 1);
-        updateTotalScore();
+        updateTotalScores();
     }
 
 })();

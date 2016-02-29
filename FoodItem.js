@@ -2,19 +2,20 @@
  * Created by Robin on 2/27/2016.
  */
 
-var FoodItem = function(name, calories, element) {
+var FoodItem = function(name, stats, element) {
 
     // Private variables
     var name = name,
-        calories = calories,
+        stats = stats,
         element = element;
+
 
     this.returnName = function() {
         return name;
     };
 
-    this.returnCalories = function() {
-        return calories;
+    this.returnStats = function() {
+        return stats;
     };
 
     this.returnElement = function() {
@@ -27,10 +28,24 @@ FoodItem.prototype.getName = function() {
     return this.returnName();
 };
 
-FoodItem.prototype.getCalories = function() {
-    return parseInt(this.returnCalories());
+FoodItem.prototype.getStats = function() {
+    return this.returnStats();
 };
 
 FoodItem.prototype.getElement = function() {
     return this.returnElement();
+};
+
+FoodItem.prototype.toJSON = function() {
+    return JSON.stringify({
+        type: "FoodItem",
+        name: this.getName(),
+        stats: this.getStats(),
+        element: {
+            id: this.getElement().id,
+            draggable: this.getElement().draggable,
+            alt: this.getElement().alt,
+            src: this.getElement().src
+        }
+    });
 };
