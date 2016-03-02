@@ -38,16 +38,18 @@
     (function init() {
         // Check if the game has been played before by checking the local storage
         // if so, get those elements
-        if(lsItem) {
+        if (lsItem) {
             scoreBoard = new ScoreBoard(JSON.parse(lsItem));
             items = scoreBoard.items.slice(0);
-            for(var i in items) {
+            for (var i in items) {
                 dropArea.appendChild(items[i].getElement());
-                items[i].getElement().oncontextmenu = function(ev) { mouseDown(ev); };
+                items[i].getElement().oncontextmenu = function (ev) {
+                    rightMouseDown(ev);
+                };
             }
-            if(scoreBoard.gender == "male") {
+            if (scoreBoard.gender == "male") {
                 maleCheckbox.checked = true;
-            } else if(scoreBoard.gender == "female") {
+            } else if (scoreBoard.gender == "female") {
                 femaleCheckbox.checked = true;
             }
             updateTotalScores();
@@ -56,28 +58,37 @@
             items = [];
         }
 
-        dropArea.ondrop = function(ev) { drop(ev); };
-        dropArea.ondragover = function(ev) { allowDrop(ev); };
+        dropArea.ondrop = function (ev) {
+            drop(ev);
+        };
+        dropArea.ondragover = function (ev) {
+            allowDrop(ev);
+        };
 
         // Give all images in this area the draggable attribute and an event listener function
-        for(var i=0; i < draggableItems.length; i++) {
+        for (var i = 0; i < draggableItems.length; i++) {
             // Check if the image has a calories attribute
-            if(!draggableItems[i].hasAttribute("calories"))
+            if (!draggableItems[i].hasAttribute("calories"))
                 console.error("This item has no 'calories' attribute: " + draggableItems[i].alt);
 
             draggableItems[i].setAttribute("draggable", true);
-            draggableItems[i].addEventListener("dragstart", function(ev) { drag(ev); })
+
+            $(draggableItems[i]).draggable({
+                helper: "clone"
+            }, drag);
         }
 
+        $(dropArea).droppable(drop);
+
         //Checkbox events
-        maleCheckbox.onchange = function() {
-            if(maleCheckbox.checked) {
+        maleCheckbox.onchange = function () {
+            if (maleCheckbox.checked) {
                 scoreBoard.gender = "male"
             }
             updateTotalScores();
         };
-        femaleCheckbox.onchange = function() {
-            if(femaleCheckbox.checked) {
+        femaleCheckbox.onchange = function () {
+            if (femaleCheckbox.checked) {
                 scoreBoard.gender = "female"
             }
             updateTotalScores();
@@ -88,7 +99,7 @@
 
     // Event Handlers
 
-    window.onbeforeunload = function() {
+    window.onbeforeunload = function () {
         localStorage.setItem("calorie-game", scoreBoard.toJSON());
     };
 
@@ -97,17 +108,24 @@
     }
 
     function drag(event) {
+        //console.log(event);
         event.dataTransfer.setData("text", event.target.id);
     }
 
     function drop(event) {
         event.preventDefault();
-        var dropData = event.dataTransfer.getData("text"),
-            item = document.getElementById(dropData),
-            clone = item.cloneNode(true);
+        //console.log(event);
+        var dropData = (event.originalEvent.target.id) ? document.getElementById(event.originalEvent.target.id) : event.srcElement,
+            clone = dropData.cloneNode(true);
         dropArea.appendChild(clone);
+
+        clone.style.position = "relative";
+        clone.style.top = "auto";
+        clone.style.left = "auto";
         // Add removal function to the added element
-        clone.oncontextmenu = function(ev) { mouseDown(ev); };
+        clone.oncontextmenu = function (ev) {
+            rightMouseDown(ev);
+        };
         var stats = {
             calories: clone.getAttribute("calories"),
             fat: clone.getAttribute("fat"),
@@ -122,11 +140,11 @@
         updateTotalScores();
     }
 
-    function mouseDown(event) {
+    function rightMouseDown(event) {
         // Prevent context menu from popping up
         event.preventDefault();
-        for(var i = 0; i < items.length; i++) {
-            if(event.target == items[i].getElement()) {
+        for (var i = 0; i < items.length; i++) {
+            if (event.target == items[i].getElement()) {
                 removeItem(i);
             }
         }
@@ -142,13 +160,13 @@
 
         // Update the labels
         var max = (scoreBoard.gender == "male") ? 2500 : 2000;
-        var percentCal = parseFloat(Math.round(((scoreBoard.getTotalScore().calories / max)*100)*100)/100).toFixed(2);
+        var percentCal = parseFloat(Math.round(((scoreBoard.getTotalScore().calories / max) * 100) * 100) / 100).toFixed(2);
         calorieLabel.innerHTML = calText[0] + ": " + scoreBoard.getTotalScore().calories + "/" + max + " (" + percentCal + "%)";
-        fatLabel.innerHTML = fatText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().fat*100)/100).toFixed(2);
-        eggwhiteLabel.innerHTML = eggText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().eggwhite*100)/100).toFixed(2);
-        carbonLabel.innerHTML = carbonText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().carbonhydrates*100)/100).toFixed(2);
-        fibersLabel.innerHTML = fibersText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().fibers*100)/100).toFixed(2);
-        saltLabel.innerHTML = saltText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().salt*100)/100).toFixed(2);
+        fatLabel.innerHTML = fatText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().fat * 100) / 100).toFixed(2);
+        eggwhiteLabel.innerHTML = eggText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().eggwhite * 100) / 100).toFixed(2);
+        carbonLabel.innerHTML = carbonText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().carbonhydrates * 100) / 100).toFixed(2);
+        fibersLabel.innerHTML = fibersText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().fibers * 100) / 100).toFixed(2);
+        saltLabel.innerHTML = saltText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().salt * 100) / 100).toFixed(2);
     }
 
     function removeItem(index) {

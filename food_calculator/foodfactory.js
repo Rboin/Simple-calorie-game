@@ -5,7 +5,6 @@
 var FoodFactory = {};
 
 FoodFactory.createItem = function (name, id, draggable, src, alttext, stats) {
-    // CREATE ITEM
     var element = this.createElement(id, draggable, alttext, src, stats);
     return new FoodItem(name, stats, element);
 };
