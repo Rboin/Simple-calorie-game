@@ -43,8 +43,8 @@
             items = scoreBoard.items.slice(0);
             for (var i in items) {
                 dropArea.appendChild(items[i].getElement());
-                items[i].getElement().oncontextmenu = function (ev) {
-                    rightMouseDown(ev);
+                items[i].getElement().onclick = function (ev) {
+                    mouseDown(ev);
                 };
             }
             if (scoreBoard.gender == "male") {
@@ -125,8 +125,8 @@
         clone.style.top = "auto";
         clone.style.left = "auto";
         // Add removal function to the added element
-        clone.oncontextmenu = function (ev) {
-            rightMouseDown(ev);
+        clone.onclick = function (ev) {
+            mouseDown(ev);
         };
         var stats = {
             calories: clone.getAttribute("calories"),
@@ -142,8 +142,8 @@
         updateTotalScores();
     }
 
-    function rightMouseDown(event) {
-        // Prevent context menu from popping up
+    function mouseDown(event) {
+        //console.log(event);
         event.preventDefault();
         for (var i = 0; i < items.length; i++) {
             if (event.target == items[i].getElement()) {
