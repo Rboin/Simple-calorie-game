@@ -58,9 +58,10 @@
             items = [];
         }
 
-        dropArea.ondrop = function (ev) {
-            drop(ev);
-        };
+        $(dropArea).droppable({
+            drop: drop
+        });
+
         dropArea.ondragover = function (ev) {
             allowDrop(ev);
         };
@@ -78,7 +79,7 @@
             }, drag);
         }
 
-        $(dropArea).droppable(drop);
+
 
         //Checkbox events
         maleCheckbox.onchange = function () {
@@ -108,14 +109,15 @@
     }
 
     function drag(event) {
-        //console.log(event);
+        console.log(event);
         event.dataTransfer.setData("text", event.target.id);
     }
 
-    function drop(event) {
+    function drop(event, ui) {
         event.preventDefault();
+        //console.log(ui.draggable[0].id);
         //console.log(event);
-        var dropData = (event.originalEvent.target.id) ? document.getElementById(event.originalEvent.target.id) : event.srcElement,
+        var dropData = document.getElementById(ui.draggable[0].id),
             clone = dropData.cloneNode(true);
         dropArea.appendChild(clone);
 
