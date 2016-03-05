@@ -57,7 +57,7 @@
             forecastContainer.removeChild(forecastContainer.firstChild);
         }
         for (var i in result) {
-            console.log(result[i]);
+            //console.log(result[i]);
             var element = document.createElement("div"),
                 img = document.createElement("img"),
                 dateLabel = document.createElement("label"),
@@ -65,8 +65,8 @@
                 humidityLabel = document.createElement("label");
             img.setAttribute("src", "http://openweathermap.org/img/w/" + result[i].icon + ".png");
             dateLabel.innerHTML = "Date: " + result[i].date.split(" ")[0];
-            tempLabel.innerHTML = "Temp: " + parseInt(weather.kelvinToCelsius(result[i].temp));
-            humidityLabel.innerHTML = "Humidity: " + result[i].hum;
+            tempLabel.innerHTML = "Temp: " + parseInt(weather.kelvinToCelsius(result[i].temp)) + "&#8451";
+            humidityLabel.innerHTML = "Humidity: " + result[i].hum + "%";
             element.appendChild(img);
             element.appendChild(dateLabel);
             element.appendChild(tempLabel);

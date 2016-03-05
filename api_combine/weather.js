@@ -4,15 +4,10 @@
 
 
 var Weather = function () {
-    var key = '269294b98f8ddf935e3c9e0d64cb7898',
-        url = 'http://api.openweathermap.org/data/2.5/';
+    var key = '269294b98f8ddf935e3c9e0d64cb7898';
 
     this.returnKey = function () {
         return key;
-    };
-
-    this.returnUrl = function () {
-        return url;
     };
 };
 

@@ -164,11 +164,11 @@
         var max = (scoreBoard.gender == "male") ? 2500 : 2000;
         var percentCal = parseFloat(Math.round(((scoreBoard.getTotalScore().calories / max) * 100) * 100) / 100).toFixed(2);
         calorieLabel.innerHTML = calText[0] + ": " + scoreBoard.getTotalScore().calories + "/" + max + " (" + percentCal + "%)";
-        fatLabel.innerHTML = fatText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().fat * 100) / 100).toFixed(2);
-        eggwhiteLabel.innerHTML = eggText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().eggwhite * 100) / 100).toFixed(2);
-        carbonLabel.innerHTML = carbonText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().carbonhydrates * 100) / 100).toFixed(2);
-        fibersLabel.innerHTML = fibersText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().fibers * 100) / 100).toFixed(2);
-        saltLabel.innerHTML = saltText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().salt * 100) / 100).toFixed(2);
+        fatLabel.innerHTML = fatText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().fat * 100) / 100).toFixed(2) + " g";
+        eggwhiteLabel.innerHTML = eggText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().eggwhite * 100) / 100).toFixed(2) + " g";
+        carbonLabel.innerHTML = carbonText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().carbonhydrates * 100) / 100).toFixed(2) + " g";
+        fibersLabel.innerHTML = fibersText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().fibers * 100) / 100).toFixed(2) + " g";
+        saltLabel.innerHTML = saltText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().salt * 100) / 100).toFixed(2) + " g";
     }
 
     function removeItem(index) {
