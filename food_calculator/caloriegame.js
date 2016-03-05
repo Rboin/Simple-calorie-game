@@ -5,26 +5,25 @@
 (function CalorieGame() {
 
     // Get needed elements from DOM
-    var gameArea = document.getElementById("calorie-game");
-    var dropArea = document.getElementById("calorie-calculator");
+    var gameArea = document.getElementById("calorie-game"),
+        dropArea = document.getElementById("calorie-calculator");
     // Score labels
-    var calorieLabel = document.getElementById("total-calories");
-    var fatLabel = document.getElementById("total-fat");
-    var eggwhiteLabel = document.getElementById("total-eggwhite");
-    var carbonLabel = document.getElementById("total-carbonhydrates");
-    var fibersLabel = document.getElementById("total-fibers");
-    var saltLabel = document.getElementById("total-salt");
+    var calorieLabel = document.getElementById("total-calories"),
+        fatLabel = document.getElementById("total-fat"),
+        eggwhiteLabel = document.getElementById("total-eggwhite"),
+        carbonLabel = document.getElementById("total-carbonhydrates"),
+        fibersLabel = document.getElementById("total-fibers"),
+        saltLabel = document.getElementById("total-salt");
     // Male and female checkboxes
-    var maleCheckbox = document.getElementById("checkMale");
-    var femaleCheckbox = document.getElementById("checkFemale");
+    var maleCheckbox = document.getElementById("checkMale"),
+        femaleCheckbox = document.getElementById("checkFemale");
 
     // Draggable images
     var draggableItems = gameArea.getElementsByTagName("img");
 
     var lsItem = localStorage.getItem("calorie-game");
 
-    var scoreBoard;
-    var items;
+    var scoreBoard, items;
 
     /**
      * This function will run automatically when the enclosing function runs.
@@ -43,9 +42,7 @@
             items = scoreBoard.items.slice(0);
             for (var i in items) {
                 dropArea.appendChild(items[i].getElement());
-                items[i].getElement().onclick = function (ev) {
-                    mouseDown(ev);
-                };
+                items[i].getElement().onclick = mouseDown;
             }
             if (scoreBoard.gender == "male") {
                 maleCheckbox.checked = true;
@@ -80,7 +77,6 @@
         }
 
 
-
         //Checkbox events
         maleCheckbox.onchange = function () {
             if (maleCheckbox.checked) {
@@ -104,15 +100,30 @@
         localStorage.setItem("calorie-game", scoreBoard.toJSON());
     };
 
+    /**
+     * Disables the default behavior so that we can drop items on the dropArea.
+     * @param event
+     */
     function allowDrop(event) {
         event.preventDefault();
     }
 
+    /**
+     * Sets the dataTransfer object to the given target id.
+     * @param event
+     */
     function drag(event) {
-        console.log(event);
+        //console.log(event);
         event.dataTransfer.setData("text", event.target.id);
     }
 
+    /**
+     * This function catches the drop event and is given two parameters. Event is the JQuery event that has been
+     * called when an item has been dropped on the dropArea.
+     * And the ui parameter, which is the element that has been dropped.
+     * @param event
+     * @param ui
+     */
     function drop(event, ui) {
         event.preventDefault();
         //console.log(ui.draggable[0].id);
@@ -142,6 +153,11 @@
         updateTotalScores();
     }
 
+    /**
+     * This function simply gets the index of the clicked element in the item[]
+     * and then calls the removeItem function.
+     * @param event
+     */
     function mouseDown(event) {
         //console.log(event);
         event.preventDefault();
@@ -152,6 +168,9 @@
         }
     }
 
+    /**
+     * Updates the score labels.
+     */
     function updateTotalScores() {
         var calText = calorieLabel.innerHTML.split(":"),
             fatText = fatLabel.innerHTML.split(":"),
@@ -171,6 +190,11 @@
         saltLabel.innerHTML = saltText[0] + ": " + parseFloat(Math.round(scoreBoard.getTotalScore().salt * 100) / 100).toFixed(2) + " g";
     }
 
+    /**
+     * Removes the given index from the item[], the scoreboard and the droparea
+     * and updates the score labels.
+     * @param index
+     */
     function removeItem(index) {
         dropArea.removeChild(items[index].getElement());
         scoreBoard.removeItem(items[index]);
